@@ -4,6 +4,7 @@ require('dotenv').config();
 const router = require('./routes/authRoutes.js')
 const cookieParser = require('cookie-parser');
 const {requireAuth, checkUser} = require('./middlewares/authMiddleware.js');
+const {sensitiveCacheControl} = require('./middlewares/clearCacheMiddleware.js')
 
 const app = express();
 
@@ -11,6 +12,8 @@ const app = express();
 app.use(express.static('public'));
 app.use(express.json()); // converts the form data to the javascript object and attaches that object to req object 
 app.use(cookieParser());
+
+
 
 
 // view engine
@@ -26,8 +29,8 @@ mongoose.connect(dbURI)
 // routes
 
 app.get('*',checkUser);
-app.get('/', (req, res) => res.render('home'));
-app.get('/smoothies',requireAuth , (req, res) => res.render('smoothies'));
+app.get('/', sensitiveCacheControl,(req, res) => res.render('home'));
+app.get('/smoothies',sensitiveCacheControl,requireAuth , (req, res) => res.render('smoothies'));
 
 app.use(router);
 
